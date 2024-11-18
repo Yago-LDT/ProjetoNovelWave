@@ -1,0 +1,10 @@
+logo {
+     display: block; /* Garantir que o logo se comporte como um bloco */
+    width: 200px; /* Definir largura do logo */
+    height: 100px; /* Definir altura do logo */
+    background-image: url('https://i.imgur.com/pye9h58.jpeg'); 
+    background-size: contain; /* Ajustar a imagem ao tamanho definido */
+    background-repeat: no-repeat; /* Evitar repetição da imagem */
+    background-position: center; /* Centralizar a imagem no logo */
+    
+}
