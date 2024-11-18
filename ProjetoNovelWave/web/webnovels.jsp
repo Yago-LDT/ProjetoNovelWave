@@ -149,6 +149,7 @@
                             <th>Número</th>
                             <th>Data de Postagem</th>
                         </tr>
+                   
         <%
                     do {
                         String titulo = rsCapitulos.getString("Titulo");
@@ -156,10 +157,11 @@
                         String postagem = rsCapitulos.getString("Postagem");
                         int idCapitulo = rsCapitulos.getInt("Capitulo");
         %>
+                   
                         <tr>
-                            <td><%= titulo %></td>
-                            <td><%= numero %></td>
-                            <td><%= postagem %></td>
+                            <td>    <%= titulo %></td>
+                            <td>    <%= numero %></td>
+                            <td>    <%= postagem %></td>
                             <td><a href="capitulos.jsp?acao=listar&id=<%= idListar %>&idcap=<%= idCapitulo %>">Ler</a></td>
                         </tr>
         <%

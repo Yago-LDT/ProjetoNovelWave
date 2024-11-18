@@ -66,7 +66,8 @@
             
         </form>
         
-        <br><br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br>
         <footer>
         <p>&copy; 2024 NovelWave. Todos os direitos reservados.</p>
     </footer>
