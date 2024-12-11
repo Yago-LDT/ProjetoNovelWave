@@ -40,13 +40,13 @@ Os desenvolvedores do projeto:
 
 <details>
   <summary>
-    <a href="https://github.com/Yago-LDT"> * Yago Pereira Nunes</a>
+    <a href="https://github.com/Yago-LDT">  Yago Pereira Nunes</a>
   </summary>
 </details>
 Criação do banco, criação das páginas e backend.
 
 <details>
   <summary>
-    <a href="https://github.com/">  * Isaías de Souza Oliveira</a>
+    <a href="https://github.com/">   Isaías de Souza Oliveira</a>
   </summary>
 </details>
