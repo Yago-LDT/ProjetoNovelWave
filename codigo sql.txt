@@ -1,0 +1,1042 @@
+-- drop schema novelwave;
+
+create schema if not exists novelwave default character set utf8;
+use novelwave;
+
+create table if not exists usuario (id int not null auto_increment primary key, login varchar(50) not null, senha varchar(50) not null, email varchar(50), dia_registro date);
+
+create table if not exists webnovels (id int not null auto_increment primary key, nome varchar(255) not null, caminho_imagem varchar(255), autor varchar(255) not null, status varchar (40), genero1 varchar(20), genero2 varchar(20), ano_postagem int(4), num_cap int, ult_at datetime, sinopse varchar(2000));
+
+create table if not exists capitulos (id int not null auto_increment primary key, idnovel int, num int, nome varchar(255), conteudo mediumtext, data_postagem datetime,
+foreign key (idnovel) references webnovels(id));
+
+create table if not exists novel_cap (idnovel int, idcap int,
+foreign key (idnovel) references webnovels(id),
+foreign key (idcap) references capitulos (id));
+
+create table if not exists novels_fav (idusuario int, favnovels int,
+foreign key (idusuario) references usuario(id),
+foreign key (favnovels) references webnovels(id));
+
+
+DELIMITER //
+Create trigger novo_novel_cap
+AFTER INSERT 
+ON capitulos
+FOR EACH ROW
+BEGIN
+INSERT INTO novel_cap (idnovel, idcap) values (new.idnovel, new.id);
+END ;
+//
+
+DELIMITER ;
+
+DELIMITER //
+Create trigger novo_update_webnovels
+AFTER INSERT 
+ON capitulos
+FOR EACH ROW
+BEGIN
+UPDATE webnovels SET num_cap = num_cap + 1, ult_at=new.data_postagem WHERE id = new.idnovel;
+END ;
+//
+
+DELIMITER ;
+
+DELIMITER //
+Create trigger tirar_update_webnovels
+BEFORE DELETE 
+ON capitulos
+FOR EACH ROW
+BEGIN
+UPDATE webnovels SET num_cap = num_cap - 1 WHERE id = old.idnovel;
+END ;
+//
+
+DELIMITER ;
+
+DELIMITER //
+Create trigger tirar_usuario_favs
+BEFORE DELETE 
+ON usuario
+FOR EACH ROW
+BEGIN
+DELETE FROM novels_fav WHERE idusuario = old.id;
+END ;
+//
+
+DELIMITER ;
+
+DELIMITER //
+Create trigger tirar_novel_favs
+BEFORE DELETE 
+ON webnovels
+FOR EACH ROW
+BEGIN
+DELETE FROM novels_fav WHERE idnovel = old.id;
+END ;
+//
+
+DELIMITER ;
+
+
+select * from capitulos;
+
+insert into webnovels (nome, caminho_imagem, autor, status, genero1, genero2, ano_postagem, num_cap, ult_at, sinopse) values ('Shadow Slave', 'https://i.pinimg.com/736x/2f/ce/d0/2fced04904a0776716e9860450ecf467.jpg','Guiltythree', 'Em andamento', 'Ação', 'Fantasia', 2022, 1989, now(), 'Growing up in poverty, Sunny never expected anything good from life. However, even he did not anticipate being chosen by the Nightmare Spell and becoming one of the Awakened
+
+– an elite group of people gifted with supernatural powers.
+
+Transported into a ruined magical world, he found himself facing against terrible monsters
+
+– and other Awakened
+
+– in a deadly battle of survival.
+
+Whats worse, the divine power he received happened to possess a small, but potentially fatal side effect…');
+ 
+ insert into webnovels (nome, caminho_imagem, autor, status, genero1, genero2, ano_postagem, num_cap, ult_at, sinopse) values ('A Practical Guide to Evil','https://i.pinimg.com/736x/3c/93/24/3c9324ce26a706f10d94e01b3ed731d9.jpg','ErraticErrata', 'Completo','Fantasia','Aventura', 2015, 628, now(), 'The Empire stands triumphant.
+
+For twenty years the Dread Empress has ruled over the lands that were once the Kingdom of Callow, but behind the scenes of this dawning golden age threats to the crown are rising. The nobles of the Wasteland, denied the power they crave, weave their plots behind pleasant smiles.
+In the north the Forever King eyes the ever-expanding borders of the Empire and ponders war. The greatest danger lies to the west, where the First Prince of Procer has finally claimed her throne: her people sundered, she wonders if a crusade might not be the way to secure her reign. 
+Yet none of this matters, for in the heart of the conquered lands the most dangerous man alive sat across an orphan girl and offered her a knife.
+
+Her name is Catherine Foundling, and she has a plan.');
+
+ insert into webnovels (nome, caminho_imagem, autor, status, genero1, genero2, ano_postagem, num_cap, ult_at, sinopse) values ('The Beginning After the End', 'https://static.wixstatic.com/media/f2abb2_f06e0aa083954bcd95199910b3092f87~mv2.png/v1/fill/w_234,h_351,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/%5BTheBeginningAfterTheEnd_Novel%5D_Cover.png', 'TurtleMe', 'Em andamento', 'Fantasia', 'Ação', 2016, 498, now(), 'King Grey has unrivaled strength, wealth, and prestige in a world governed by martial ability. However, solitude lingers closely behind those with great power. Beneath the glamorous exterior of a powerful king lurks the shell of man, devoid of purpose and will. 
+
+Reincarnated into a new world filled with magic and monsters, the king has a second chance to relive his life. Correcting the mistakes of his past will not be his only challenge, however. Underneath the peace and prosperity of the new world is an undercurrent threatening to destroy everything he has worked for, questioning his role and reason for being born again. 
+
+ Show More
+Tags');
+
+ insert into webnovels (nome, caminho_imagem, autor, status, genero1, genero2, ano_postagem, num_cap, ult_at, sinopse) values ('Pale Lights', 'https://www.royalroadcdn.com/public/covers-large/65058-pale-lights.jpg?time=1692988821', 'ErraticErrata', 'Em Andamento', 'Aventura', 'Suspense', 2022, 108, now(), 'Vesper is a world built on the ruins of older ones: in the dark of that colossal cavern no one has ever known the edges of, empires rise and fall like flickering candles.
+
+Civilization huddles around pits of the light that falls through the cracks in firmament, known by men as the Glare. It is the unblinking stare of the never-setting sun that destroyed the Old World, the cruel mortar that allows survival far below. Few venture beyond its cast, for in the monstrous and primordial darkness of the Gloam old gods and devils prowl as men made into darklings worship hateful powers. So it has been for millennia, from the fabled reign of the Antediluvians to these modern nights of blackpowder and sail. And now the times are changing again.');
+
+insert into capitulos (idnovel, nome, num, conteudo, data_postagem) values (1, 'Home Sweet Home', 1989, 'Morgan had her bow, and the Saints of Night had already summoned their weapons.
+
+In this battle, their strength would be stifled by having to fight on land. However, that did not mean that they were powerless — far from it. Naeve was wearing light, but immensely resilient armor sewn from the skin of some unknown sea monster, wielding a long harpoon made of bone as a spear. 
+His indigo eyes seemed to glow in the moonlight, and his handsome face was both somber and cold. 
+Bloodwave had summoned a heavy armor forged from dull metal, which made his towering figure seem even more formidable.
+ He was armed with a heavy cutlass — there were two of them before, but one had been destroyed in one of the previous battles.
+ Now, the taciturn Saint simply used the claws of his steel gauntlet to rend the flesh of his enemies.
+ Aether reached toward the sky, grasping a ray of starlight and manifesting it into a thin blade.
+ The youngest of the Saints did not possess as much physical strength as the rest of them, but made up for it with speed and skill.
+ The weapons he could weave from starlight were absolutely lethal… still, his Aspect was not suited for close combat that well. 
+ Not that anyone was suited well for facing Mordret. Today, the defenders of the crumbling fortress were weaker than they had ever been. 
+ Morgans three most powerful champions were away, each dealing with their own crisis.
+
+Her brother, meanwhile, still possessed more than enough vessels to take the castle.
+ Some of them were following Knossos and Typhaon, but ten — including his true body — were here.
+They had already scaled the outer wall, avoiding the cloud of mist and the Nightmare Creatures that were still fighting Soul Reaper within it.
+ Mordret himself lingered at the top of the rampart, looking up at the second ring of the battlements.
+ Despite the apocalyptic noise of the battle, his voice reached Morgan and her Saints clearly. "Ah… how sweet it is, to finally come home."
+Despite the sweet words, his tone was deep and dark, full of nothing but coldness and malice.
+
+He smiled. "Arent you going to welcome me, sister?"
+
+Instead of an answer, Morgan sent an arrow flying his way. Laughing, Mordret swatted it away with his sword. As the Spell whispered in her ear,
+ announcing the Memorys destruction, her brother and his vessels leaped off the outer wall and rushed toward the second ring. I guess hes done being sentimental.
+Morgan sighed and dismissed her bow, summoning a sword instead.
+
+All around Bastion, runes carved into the ancient stone suddenly lit up with ethereal light as its enchantment array came alive. 
+Before, Sentinel Swords left behind by her father would come alive and fall like steel rain on the heads of the invaders. 
+Many other deadly enchantments would activate, as well, enveloping the ruined fortress in a defensive net. Sadly, most of the arrays power had been exhausted in the past few weeks.
+ The Sentinel Swords had been shattered one after another, the reserves of essence powering the array had been drained, 
+ and many of the runes forming it had been found and destroyed. Now, the colossal enchantment was a pale shadow of its former self. 
+ It still did one thing particularly well, however…
+
+It restricted both the Others and the Aspect powers of the Prince of Nothing. Here in the crumbling fortress, he could only rely on brute strength to obliterate its defenders. Morgan raised her sword and prepared to fight.
+Four Saints against ten Transcendent vessels of a murderous madman — the odds were not too great. …For her brother, that was. Because while he could not use his Aspect, Morgan could still use hers. Activating one of the enchantments stored in her body, she sensed dire strength permeating her very being. Time seemed to slow down a little.
+Smiling viciously, Morgan dashed forward and met the first of the Transcendent vessels as it leaped onto the wall. Those of the taken Saints who could move on land in their Transcendent forms had kept them. Those who could not had become humans again. Each of them looked different, but all — both humans and creatures — had the same cold, inhuman,
+ unfeeling look in their eyes. With dark flames of boundless wrath burning beneath the cold surface.
+ Morgan crossed swords with one of the human vessels, throwing it back off the wall. But in the next moment,
+ she had to dodge back as a gargantuan clawed hand fell on the battlements, sending a rain of sparks flying in all directions.
+ The claws bit into the ancient stone, and a hideous snout rose above the parapet, resembling that of a giant crocodile.
+ The triangular fangs snapped, almost taking Morgans arm off… or at least catching her in a crushing trap. Her body was as hard as steel, so her limbs were not that easily separated from it.
+ A moment later, two swift figures dashed past the crocodiles head, and she had to defend herself from two insidious blows. Morgan managed to deflect one, but the second scratched against her armor. Worse than that, the enchanted blade seemed to have left a corrosive film in its wake, making the black steel of her breastplate boil and flow down in thin streams of bubbling metal. That was what made her brother so deadly. Not the number of his vessels, and not their power.
+
+It was their perfect coordination, which allowed them to fight as different parts of the same organism.
+
+Because they were. If it were any other pair of enemies, Morgan would have managed to evade both blows, but the vessels of the Prince of Nothing left no chance to the enemy. 
+Damn it.
+
+Ten of them… Nôv(el)B\\jnn
+
+The enormous crocodile head rose into the air, revealing an immense neck. The creatures body was both reptilian and humanlike in nature, and it was truly enormous, standing almost as tall as the wall. The towering creature unleashed another blow at the battlements, making a section of them crumble from the obliterating force of the impact, and outstretched a mighty hand. A hurricane of sparks swirled around it, starting to form into a giant bronze trident. Morgan pursed her lips. 
+On both sides of her, Naeve, Bloodwave, and Aether had already clashed with the remaining six vessels of the Prince of Nothing. Mordret himself was holding back, for now, waiting to see if Morgan had prepared any traps for him. ...Should I be flattered? He really seems to have a very high opinion of my abilities.
+ Well… who could blame him?
+
+After all, she did have a trap prepared. In fact, this whole battle, and this whole siege, had been a carefully constructed trap.', now());
+
+insert into capitulos (idnovel, num, nome, conteudo, data_postagem) values (1, 1990, 'Iron Maiden', 'Morgan knew how devious and monstrous her brother was.
+
+ In Antarctica, he had been weaker than her. He had been slower than her. Even his technique, while stellar, had been inferior to hers. He had not commanded an army or possessed a force of powerful Echoes, either.
+
+And yet, he had turned her nearly assured victory into a defeat. Even if it had seemed like the forces of Valor would have prevailed before the descent of the Nightmare Gates, in the end, Morgan herself would not have lived long enough to see their triumph — she would have been dead, slain by that fiend. So, she knew how fearsome her brother was. However…
+
+She also noticed how he had changed after coming to the shores of the Sword Domain. Even his mask of pleasant friendliness was gone, replaced by the inhuman emptiness that Mordret had usually kept hidden in the past. He must have dreamed of his revenge for a long, long time… for many long years, locked in a dark room in the Night Temple, waiting and dreaming of visiting death and ruin upon those who had locked him there. His family. So, now that his goal was at hand, the Prince of Nothing had lost some of his flawlessly maintained composure. He was being impatient. And since he was also monstrously strong, Morgan knew how to use his impatience and turn it into arrogance. From that first battle at Rivergate, she had been carefully hiding her true strength. She had not revealed it even when her life was in danger… and when the lives of her Saints were in danger, either. That was because even while unleashing his thirst for vengeance, her brother was still supremely cautious. So, Morgan had to wait. She had waited for many long weeks, methodically reinforcing the notion of her lacking strength in his mind. Mordret was a monster, but there were still remnant pieces of humanity left in the depths of his abominable soul.
+
+He already despised Valor, and therefore felt contempt for his younger sister. Deep down, he wanted to prove that he was better than her. Stronger than her. Smarter than her… that his father had chosen wrong when casting him aside, and choosing to elevate Morgan instead. It was for that reason, and because of having already defeated her once, that Mordret had to be prone to underestimating Morgan. He already wanted to believe that she was below him in all regards, after all — so, showing him weakness over and over again was bound to reinforce that subconscious bias. However, Morgan was not weak. She was just waiting. And now, finally, the day she had been waiting for was here.
+
+…Granted, the situation was still terrible. She had hoped to decimate Mordrets forces in one fell swoop, but he had proven to be too monstrously, unreasonably powerful. It tasted bitter to admit… that he was indeed much stronger than her. As a result, Morgan could only hope to level the playing field and assure that the siege would last for a while longer with her carefully prepared trap. But there was no escaping it. Her Saints were already battered and worn out, losing more of their strength with each day. If she continued to stall for time, it would be her forces that suffered fatal losses, not his.
+
+...A pity.
+
+Morgan deflected a glancing blow of the enemys sword, somehow managed to push another aside with the pommel of her own, and then gasped when the towering reptiles trident brushed against her side.
+
+Her armor caved a little, and she was thrown back, slamming into the parapet of the battlements. A net of fractures spread through the ancient stone, and a rain of debris fell down… she groaned and straightened slowly, tasting blood on her tongue. Feeling beaten and tired, Morgan glanced east, caught a glimpse of Athena, and felt new strength flood her veins. Her cracked helmet collapsed into a rain of sparks. Sensing cool air on her heated face, Morgan smiled crookedly, looked past the hideous head of the humanlike reptile — one of the strongest vessels in Mordrets possession after Typhaon and Knossos — and pierced her brother with a dark gaze.
+
+The fiend was still refusing to join the fray...
+
+Or rather, refusing to risk his original body. In truth, each of these vessels was him, and he was already engaged in the battle. Why was he so cautious? She had hoped to destroy that original body today…
+
+But the gargantuan crocodile would have to do.
+
+"Hey, brother…"
+
+Standing some distance away, Mordret looked at her without any particular emotion.
+
+His lips twisted into a false smile. "Are you ready to surrender, sister? Or, wait. Are you going to run away again? Go and ask our father for help, per chance? Im sure he can spare a few Echoes…"
+
+Morgan let out a hollow laugh and watched as the giant reptile raised its trident to deliver another blow. The other two Transcendent vessels had not been idle while Mordret was talking either, having already flanked her. She lingered for a moment, and grinned. "...Why are you calling him our father, anyway? You bastard."n/ô/vel/b//in dot c//om
+
+Mordrets expression finally changed, bringing her great satisfaction. In the next moment, Morgans smile disappeared, replaced with a cold and ruthless expression. And her body turned to liquid steel. The torrent of it swallowed the black armor and rushed forward like a flood. In the past, Morgan had only used this Transcendent Ability to change parts of her body into blades or grow in size, becoming a steel giant of about ten meters in height. A few times, she had even mimicked the forms of other creatures… but that was not all she could do. She had held back the true extent of her power until now. Becoming a sword? Who wanted that…
+
+A sword could cut flesh, and in the right hand, it could even cut souls. But it could not cut the world. It could not wield itself, and force its own will upon existence. Morgan was going to do exactly that. A torrent of liquid metal rushed forward, expanding in size until it was like a river. It instantly swallowed the two Transcendent vessels that had been rushing to attack her from the sides, slicing their bodies apart and extinguishing the false sparks of life that burned in their dead chests. Then, it dove off the wall and wrapped itself around the colossal reptile like a snake made of mercury. The humanoid crocodile was truly gargantuan, standing as tall as the fortress wall. But finally unleashed, Morgan was able to envelop it almost entirely.
+
+And there was no escape from her iron embrace… she had absorbed quite a lot of mystical steel in the past four years, after all. The swords her father had forged, as well as the shards of the destroyed Sentinel Swords, had reinforced her Transcendent form especially well. Trapped, the enormous reptile staggered back.
+
+But it was too late.
+
+Because the river of liquid metal that Morgan had become retained the curse of her Flaw. Amplified by her Aspect Power, her flowing shape was cutting into the flesh of the powerful vessel, slicing it apart, and letting torrents of blood flow down onto the rubble. It was too slow, though. The shell of liquid metal swirling around the body of the taken Saint rippled, and countless long, appallingly sharp spikes shot from its inner surface into his flesh, riddling it with holes and destroying his every organ. Just like that, three Transcendent vessels of the Prince of Nothing were destroyed. Even knowing that his retaliation would follow a few moments later, Morgan couldnt help but laugh. Of course, she only laughed inside her mind, since her current form had no mouth and no lungs to produce sound. Three down…
+
+Would that be a big enough gesture to invite Mordret into her soul?
+
+If yes… one of them was going to die in the next few minutes.
+
+Or both of them.
+
+If not, the siege of Bastion would continue on for a long time — the loss of these vessels would slow Mordrets momentum, after all. Two of the three possible outcomes ended in her victory. Those... werent bad odds…
+
+East of the crumbling fortress, a beautiful steel colossus was battling a hideous monster in the shallow water. West of it, a graceful dragon was fighting a titanic horror of the depths fiercely, his haunting songs traveling across the surging lake. Inside the fortress, the ancient walls were collapsing, and a man with mirror-like eyes was looking curiously at as a river of living metal was slowly painted red. The shattered moon shone coldly in the broken sky',now());
+
+insert into capitulos (idnovel, num, nome, conteudo, data_postagem) values (2, 629, 'Epilogue II', '“At the end, there will be more than the Gods.
+
+With the Last Dusk will come the passing of Creation, discording turning to concord as the wager of Fate is resolved. Yet it shall not be the end of everything, for though all came of the emptiness of Void to create is to make something from nothing. That is our gift, and so the sum of the choices we have made will echo beyond the bounds of time.
+
+In the end, we are told, they will all have mattered.”
+
+– Last page of the Book of All Things',now());
+
+insert into capitulos (idnovel, num, nome, conteudo, data_postagem) values (1, '1994', 'Call to Arms', 'Far below, the battle seemed to be hanging in a fragile balance. The battle lines were twisted and broken, and in some places, all pretense of order had been lost. Countless Awakened warriors were intertwined in a chaotic melee there, having forgotten all about discipline and battle formations. Blood was spilling on the ground, and a litany of desperate voices was drowning in the deafening clangor of steel.
+
+In other places, stalwart officers were still maintaining a semblance of control. The forces of the Sword Army were pushing the forces of Song on the left flank of the grand formation, while its right flank was being pushed back instead. In the center, a furious tug of war was boiling, with neither side managing to gain ground. At first glance, the soldiers of the Sword Domain were in a better position. That had been true throughout the war. The warriors of the Song Domain did not lack courage, determination, or martial prowess… in fact, Sunny had often been stunned by their tenacious resolve. Their powers and tactics were often strange, insidious, and wild, bringing with them a sense of lethal peril.
+
+They were chillingly fearless in the face of death, and viciously ruthless when they needed to be. And yet, they were simply no match for the soldiers of the Sword Army. The army of the Sword Domain was better equipped, better trained, and better able to maintain discipline in dire situations. Even if each individual warrior fighting under the banner of the King of Swords was not more powerful than the warriors of Song, together, they made for a much tougher and deadlier force. It was partially because Clan Valor and its vassals had been in power for much longer than Clan Song, and therefore possessed a much richer martial tradition. The core of the Sword Army had been forged in the successive subjugation campaigns that brought vast regions of the Dream Realm under human control, after all, and while Ki Song had led a historic conquest of her own, its scope and length did not compare.
+
+It was also because the Awakened of the Sword Domain had always been more militant, and their martial culture had always leaned more in the direction of organized warfare. The Valor family had inherited the lineage of War God, and therefore, the region under its control was influenced in subtle ways to fit that legacy. …But mostly, it was because of the King of Swords. Nôv(el)B\\jnn
+
+His authority was everywhere, enveloping the Sword Army like an invisible veil. The soldiers were not just fighting for his Domain — they were parts of his domain and, therefore, its conduits. Sunny had noticed the subtle effect of Anvils authority during that first battle at the eastern edge of the Collarbone Plain. Those who carried it would not magically become stronger or more powerful, but the efficacy of their joint actions would be greater, their cooperation would be more seamless, and their battle spirit would become more indomitable.
+
+It was an authority to make armies triumph. And that was why the soldiers of Song were desperately outmatched in this war. Even now, they were suffering on the battlefield. The waves of Song warriors were breaking against the steel bulwark of the Sword Army forces, paying a heavy price for each assault. Despite the dire havoc of the battle, their enemy still maintained a high measure of martial discipline — the forward units endured the attacks for as long as they could, then rolled back to make space for fresh troops. When it was time to push, they marched forward as a single being. When the defensive lines were broken and the warriors of the Sword Domain were pushed back, they promptly received reinforcements. For every soldier of the Sword Army that fell, two enemies died. Sunny sighed. It did not matter, in the end. The seeming advantage of the Sword Army… was merely an illusion. Anyone with a bit of insight could tell that things were actually going quite badly for their side. That was because the Queen of Worms was exerting her influence on the battlefield, as well. And hers was a power no less dreadful than that of the King of Swords. What did it matter if fewer warriors of the Sword Army were dying? In the end, all of those who were killed — no matter the side — simply rose again, becoming members of the legion of the dead. That had been true throughout the war, as well.
+
+Yes, the Sword Army was stronger. And yes, it had held the advantage from the beginning, winning much more battles than it was losing, and suffering far fewer casualties than the enemy.
+
+But it was still a road to certain defeat. As the losses of both sides mounted, only one side was actually becoming weaker… the side Sunny was fighting for. The Song Army, meanwhile, was losing Awakened warriors, but its numbers never truly diminished.
+
+On the contrary, they continued to grow. Because it did not matter to whom the dead had been loyal once — the Queen of Worms did not discriminate between the fallen of her own army or that of the enemy, embracing all with equal grace. It was a chilling sight, to see a comrade with whom you had been fighting side by side a minute ago, and whose death you were mourning, rise from the ground and aim their empty gaze at you, determined to extinguish your own life, in turn. It was as if the Sword Army was waging war against death itself.
+
+The longer the war continued, the more soldiers the Sword Domain lost, and the greater the army of the Song Domain became. And the wider gap there between the two was, the more casualties the Sword Army suffered as a result, thus creating a harrowing cycle.
+
+Despite its superiority, they were destined to lose this war of attrition. …The same situation, albeit on a smaller scale, was currently taking place on the battlefield Sunny was observing. Something had to change soon, or they were going to suffer a bitter defeat… which could very well become irreparable, swinging the balance of power in favor of the Song Domain too much.
+
+He glanced at the King of Swords, wondering what the fearsome Sovereign was thinking about.', now());
+
+insert into capitulos (idnovel, num, nome, conteudo, data_postagem) values (4, 109, 'Chapter 63', 'Breakfast was barely finished when dread showed up in the form of three letters.
+
+The first was little more than paper folded in the Tianxi manner, unfolding from left to right along with the reader’s eye. No seal, no symbol, not so much as a sender’s name. The Yellow Earth sent their summons, Song thought. Besides them, almost ironically, sat a small letter the messenger had waited in the courtyard of Black House to hand her directly. It was sealed in russet wax, a signet ring pressed into it shallowly. House Palliades’ heraldry, a crowned owl clutching a shepherd’s crook.
+
+It was not the Lord Rector’s seal that had been used there but the personal signet ring of Evander Palliades, the implication licking at her cheeks with heat: this was private correspondence. A letter from Evander, not the Lord Rector.
+
+The last of the three letters bore the black wax stamp of official Watch correspondence. That at least Song made herself crack open and read. Her solemn face soon turned into a grimace as not even work proved to be a respite: the letter was from Colonel Adamos of Stheno’s Peak, who sternly wrote never to put to ink any mention of the aether seal ever again. She was to burn this letter when done reading it. Moreover, the Thirteenth Brigade must remain in Tratheke until the garrison officer he was sending to the capital finished debriefing them.
+
+A tossed off sentence at the end conceded, reluctantly, that since the Thirteenth Brigade was on a formal contract both her inquiries as to the god behind the Ataxia and Maryam Khaimov’s ‘disturbing observations on the matter of Asphodel crowns’ would be answered by the Savant officer he was sending south. Colonel Adamos even deigned to mark the dates involved, which…
+
+He mentioned sending this letter around the island by ship and that ‘Captain Traore’ would be arriving a week after the letter, but his Savant’s theorized date of arrival was around the seventh of the month – in other words, yesterday. The letter appeared to be over a week late.  Odd. This was an important discrepancy to uncover, crucial even, so Song tucked away the letter in her uniform and straightened her collar. She was not putting off reading the other letters, she was doing important work that required her full attention.
+
+Song locked the door behind her and left as quick as she could make her stride long without feeling like she was running.
+
+Correspondence was handled by the servants of Black House, but there were nuances at play. While notable figures could send letters directly to the Watch residence in the city, most of the correspondence that reached Black House actually passed through three stations in the city that servants went to empty every day. Angharad, whose identity must remain secret among Tratheke society, received her own letters through an arrangement with the rector’s palace.
+
+Letter intended for her were sent to Fort Archelean, the fortress at the bottom of the lifts leading up to the palace, and from there Palliades men carried them to one of the Watch stations in the city. Song’s first thought had been that the whole affair would look wildly suspicious, but apparently it was common for minor nobles in the capital to make similar arrangements – only their letters were instead brought by Palliades men to the temples of Khrusopos, the messenger god of Asphodel.
+
+All it took to have your letters brought to you was giving your name and location at such a temple before paying a small fee, which reputable inns would do on your behalf if asked. Religious observances kept names and letters private, a surprisingly functional arrangement even Lord Rectors were historically reluctant to upset.
+
+A letter from Stheno’s Peak, however, would have gone around that entire system. Mention of a ship had Song suspecting the letter must have passed through the Watch office in the Lordsport, and if the wagon from there had arrived early today its driver was likely still at Black House. She asked the servants about it and was directed to kitchens, where a stocky dark-haired woman was tearing into a bowl of stew.
+
+She saluted when Song introduced herself as captain of the Thirteenth Brigade, rising to her feet, and when asked about the letter’s provenance was eager enough to talk.
+
+“It came by the Salt Dog last evening,” the driver said, then cleared her throat. “It’s a merchant runner, ma’am, carries small goods. Dabbles in smuggling too, everyone knows.”
+
+“The letter it carried for me is late in the coming,” Song told the other woman. “Did they meet with a mishap?”
+
+“Word at port was that they ran afoul of Cordyles ships while swinging around the east of the isle,” the driver said. “Ol’ Triton’s boys wanted to come aboard and inspect the ship for ‘illicit goods’, but the Salt Dog ran for it. They had to lose the Cordyles by going through the Broken Teeth, it took them off course.”
+
+Song politely inquired as to what these Broken Teeth were, learning they were a reef-strewn belt of coast favored by smugglers because sections of the ‘Teeth’ spared vessels with shallow drag but would gut something as heavy in the water as, say, a warship. The driver noted the captain of the Salt Dog could probably have bought off the Cordyles but had preferred wasting time to coin, hence the delay.
+
+Song’s smile went a bit fixed as she thanked the other woman, leaving her to her stew after offering a silver in thanks for her cooperation. She was, of course, pleased to have so quickly resolved the mystery of the letter’s lateness. Why, she was rejoicing it had barely taken ten minutes. Perhaps tea was in order to celebrate that efficiency. Perhaps she should have that tea in one of the rooms on the first floor, to spare the servants bringing the pot all the way up the stairs where her room was, and-
+
+“Captain Ren, a word?”
+
+Whatever it was the liveried servant saw on her face when she turned, it had the young man flinching.
+
+“Yes?”
+
+“Captain Santos requests your presence, ma’am,” the younger man said. “Immediately, if you can.”
+
+“I am at his disposal,” Song replied with an appropriate amount of enthusiasm. “Lead on.”
+
+She was already on the ground floor, but it was still a walk: the signifier was waiting for her at the back of Black House so they went around the courtyard to find him. Captain Domingo Santos was a tall man of middle age, though his slouch made him seem shorter. The short hair was the neatest part of him, and his natural look was a sullen one. Song could never be sure whether it was her presence that displeased him or merely Vesper at large.
+
+“Warrant Officer Ren,” he grunted out, then nodded a dismissal at the servant.
+
+The young man scampered away as quick as he could. Well, the superstitious often feared signifiers.
+
+“Captain Santos,” she replied.
+
+He looked at her oddly, as if surprised, then snorted.
+
+“You’re in time,” he said, then jutted a thumb towards the door they stood at the threshold of. “I sent for Sergeant Ledwaba, she should be arriving soon. I will interrogate her in there.”
+
+A pause.
+
+“Given that one of your cabalists is wrapped up in my investigation, I grant you the courtesy of sitting in on the talks.”
+
+Song cynically wondered whether he’d been hoping she would be busy and made the gesture with the expectation he would not actually have to suffer her presence, but set that speculation aside. It had been a risk approaching Captain Santos with her suspicions and what she knew of the Ivory Library, given that some of that knowledge had been earned by Tristan torturing and summarily executing an officer of the Watch. A covenanter officer, at that.
+
+But it had been a risk she believed she could afford to take, given the blank amnesty paper she had gotten out of Brigadier Chilaca. Should Captain Santos decide to pursue Tristan’s killing of Lieutenant Apurva, she had a way to get her Mask out of his hands. Not that Domingo Santos seemed so inclined at the moment. He had been pleased enough at the information she provided, though also inclined to try to keep her out of the matter as much as possible.
+
+Her guess? Santos was trying to keep her name out of the final report and claim it all as his own work. Much as Song would have liked gilding the Thirteenth’s name a little by tying it to a second fulfilled contract on Asphodel, in this case letting the signifier have his way might be worth more. His authority here and now was more useful than praise in her dossier a few months down the line.
+
+“Thank you,” Song replied, lowering her head.
+
+She then lowered her voice.
+
+“Although, I must ask, would this not be better undertaken in the vault beneath the house?”
+
+Domingo Santos blinked at her owlishly.
+
+“Why would I – Ren, are you under the impression I’m going to torture her?”
+
+She coughed into her fist.
+
+“Well not at the start, surely, but should she refuse to cooperate…”
+
+The man sighed, rubbing the bridge of his nose.
+
+“Covenanter kids,” he said, speaking the words like a curse. “Like handing toddlers a crate of grenades.”
+
+He leaned forward, met her gaze.
+
+“I am going to sit down with Ledwaba, offer her a deal and use what she gives me to dig up a name that actually matters,” Captain Santos said. “Not break out a fucking iron maiden at the first sign of resistance from the bottom of a conspiracy. We are the Watch, girl, not Izcalli candle-priests.”
+
+Considering members of the Watch had tried to kill every single member of the Thirteenth – she counted Captain Yue’s experiment in the Allazei bay as attempted murder, considering how close Maryam had come to drowning – Song could not help but feel he had a somewhat rosy vision of what the Watch was. That or the Thirteenth’s own time with the order had been unusually sinister, which she grimly admitted to herself was entirely possible.
+
+“And if she does not take the deal?”
+
+“She will,” Captain Santos flatly replied. “She’s not a scholar, she has no skin in whatever game the Ivory Library is playing here.”
+
+While not convinced Song saw no point in arguing, though he gestured as if to silence her anyway.
+
+“Sit in a corner, be quiet and try not to kill anyone,” Captain Santos said. “That is the sum whole of what I require of you. Can you do that for me, Warrant Officer Ren?”
+
+“I can,” she replied through gritted teeth, somewhat insulted.
+
+The room on the other side of the door was a small parlor with comfortable seats, hardly what she would have chosen for an interrogation. As instructed, she sat on a chair in the corner and then waited as Captain Santos lit a few lamps and sat on one side of the low table in the middle of the room. Hardly a minute had passed before there was a knock on the door.
+
+Sergeant Ledwaba was bid to enter and closed the door behind her. The Malani was short and broad-shouldered, scarred on her hands and neck with neatly done knots keeping her hair in place. Her dark eyes flicked to Song before returning to Domingo Santos, wary.
+
+“Captain?”
+
+“Sit down, Ledwaba,” he ordered.
+
+She hesitated, then after a moment slid into the seat across from his. There was a pitcher full of water on a drawer by the wall but Captain Santos did not offer and she did not ask. No contract, Song noted.
+
+“May I ask-”
+
+“You got sold out,” Domingo Santos interrupted her. “Apurva named you as Ivory Library before he got…”
+
+The Lierganen drew a finger across her face. Sergeant Ledwaba’s face went blank. Song kept her surprise off her face at both the bluntness of the approach and his false implication that Tristan’s murderous interlude had been at Captain Santos’s own orders.
+
+“I have no idea what you’re talking about,” Ledwaba said. “The what library?”
+
+“The Grinning Madcap,” Captain Santos said, then folded his arms. “Is your memory coming back yet?”
+
+The sergeant’s dark face tightened just a bit when the name of the ship chartered by the Ivory Library was spoken. That continued gambit was only possible because Tristan had obtained the name and Song shared it with Santos, but at least it was being properly employed.
+
+“The Ivory Library’s not a banned society,” Ledwaba said. “Even if I were part of it – and I’m not – it wouldn’t be a crime under Watch rules.”
+
+Song cocked her head to the side. It felt strange, hearing a woman with Malani looks so blatantly lie, but then besides her skin tone and name there were no Malani tells about Ledwaba. She did not even have an accent in Antigua, or rather her accent was a Lierganen one. That swallowed ‘s’ sound was some dialect from the Riven Coast, wasn’t it?
+
+“Trying to abduct a Scholomance student out on a contract is, though,” Captain Santos replied. “The hanging kind. Do they pay you well enough for a noose, Ledwaba? Because if you don’t bargain with me, that’s where you’re headed. I already have more than enough for that.”
+
+Did he really? Song was not so sure. What he had was the word of a man who had murdered a Watch officer that said officer had confessed to a crime and named names. The only way for Tristan’s testimony to become more than his word against Ledwaba’s was for a truth-teller to become involved, which could take weeks if there wasn’t one at hand. Those contracts were relatively rare, and in even higher demand than sniffers besides. Only healers were more highly prized.
+
+The air hung tense, the sergeant worrying her lip, then she spat out a few Antiguan words Song did not recognize. Definitely Riven Coast, the Tianxi decided. Some of that had sounded similar to hollow cants.
+
+“No, they don’t,” Sergeant Ledwaba grunted, then spat to the side. “I want a pardon.”
+
+“Hah!” Captain Santos laughed. “Fuck no. You get a black mark – sealed, don’t whine – on your record and a transfer to a sitiada posting. If you give me everything and keep your nose clean, when that tour is done your record will be purged and we forget this ever happened.”
+
+“You might as well send me to the Bleaklands,” Ledwaba complained. “They’re still cleaning up the last of Loving Kiss revenants down south.”
+
+“You shouldn’t have taken the gold,” Santos told her, unsympathetic. “Besides, it’s for your own good – you’ll be far from the Library down there. Too far for them to take a shot at you on the cheap, and you’re not worth an expensive vengeance.”
+
+Ledwaba grimaced, leaning back to glance at Song. The silver-eyed captain offered her only ice.
+
+“I should have known it’d end up too much trouble,” the sergeant sighed. “Fine, what do you want from me?”
+
+“Names and a confession,” Captain Santos said. “There’s another one of you in the delegation, a higher-up. Who?”
+
+“Lieutenant Shu Gong,” Ledwaba said. “I don’t know how deep she is in their little cult, but I know she’s not just a hireling like me.”
+
+Song bit at the inside of her cheek. Shu Gong, really? She was a terrible spy! Even setting aside that near every merchant in the southwestern ward had robbed her, Song had watched that woman and she was a nervous, awkward mess. Song had once seen her flip her own breakfast plate onto her lap trying to clean up spilled tea. Either she was one of the most skilled dissembled Song Ren had ever encountered or someone in the Ivory Library had made a mistake.
+
+“Who runs the plot locally?” Captain Santos asked.
+
+“It was supposed to be Apurva, I was told I answered to him,” the sergeant said. “Shu’s in charge now, but she has no idea what she’s doing so she’s crossing her fingers hoping the Scholomance bastardinos will handle everything for her.”
+
+And there we went, confirmation of the Nineteenth’s involvement. If that could be put to ink and signed, even should Tristan reappear accompanied by fresh student corpses Song should be able to keep him off the gallows. That was a relief, but she did not let herself soak it in. Do not count your chickens before they hatch, Song reminded herself. Nothing was on paper yet.
+
+“Is there anyone else?” the signifier pressed. “The more you give me, the more is added to your tab.”
+
+“I got the impression Chilaca might have been bribed to look elsewhere,” Ledwaba added after hesitating a moment. “But they did not tell me everything, I’m only meant to be muscle. I know the sign and countersign for the Madcap’s captain to take on the prisoner, though, if that’s worth anything.”
+
+“It is,” Captain Santos assured her. “What makes Abrascal such a tempting target, anyhow?”
+
+“No idea,” Ledwaba admitted. “I heard Apurva mention a report being leaked to the Ivory Library some months back, but the scholars were never chatty with me. Tight with the purse strings, too.”
+
+That last part sounded a little like whining. Domingo Santos hummed, sounding mildly interested in the Library’s interest, but did not push further even though Song would have preferred him to. What he was truly interested in, it turned out, was putting out ink and paper so he could hash out the terms of a signed confession with Sergeant Ledwaba. He was friendly with the traitor, almost too friendly – suggesting phrasing that avoided implicating herself with graver crimes and striking out mention of payment so she could keep her ill-earned gold.
+
+It left a sour taste in the mouth, watching it all, but Song kept her mouth shut. Sergeant Ledwaba deserved worse than she would get, but what she was giving them was worth much more than the temporary satisfaction of seeing her put up against the wall and shot. Within the hour, Ledwaba had signed the confession and the blackcloak strolled her way out of the parlor with rather more cheer than a woman in her position should be feeling.
+
+Silence lingered behind her, until Captain Santos let out a long pleased sigh and leaned back into his chair.
+
+“Good as finished,” the signifier said. “I will need to bring in Brigadier Chilaca before I arrest Lieutenant Gong, else he could stonewall me, but I wager that as soon as it can be done without the Asphodelians noticing she’ll be grabbed.”
+
+“Good news,” Song said. “And the Nineteenth Brigade?”
+
+“Ledwaba gave them up,” he shrugged. “As soon as I’ve shown the brigadier that confession you can petition him to have them all arrested even if they’re on contract – though he’ll want some kind of face-saving measure to be able to avoid telling the Lord Rector they were traitors. He’ll have to do something when presented the evidence, though, otherwise it breaks Watch regulations.”
+
+“I am looking forward to it,” Song toothily smiled.
+
+“So am I,” Captain Santos happily replied. “Finally I get to stop sniffing at everyone’s private papers and mark their belongings. I’ll be off this rock on the next ship, mark my words, and the Obscure Committee will shower me with gold and praise.”
+
+He paused, turning to look at her.
+
+“You made this much easier on me than it could have been,” Domingo Santos frankly said. “You might be a bloody-handed kid in covenanter boots, but this was good work and I’ll not let a good turn go unanswered. I owe you a favor.”
+
+Silver eyes narrowed. Song had not dared hoped for that, but a good officer should plan for outcomes both foul and fair.
+
+“There is a way you could settle it now, and at no cost to you.”
+
+He raised his eyebrows, intrigued, and so she told him. The signifier laughed.
+
+“Easy enough to arrange,” Captain Santos said, and this time when he nodded there was an undertone of respect to it. “A good day to you then, Captain Ren. I expect I’ll be hearing good things of the Thirteenth in years to come.”
+
+“And to you, sir,” Song replied, rising to her feet. “It has been a pleasure.”
+
+And after that favor, she could even say the latter part wasn’t a lie.
+
+—
+
+Angharad was no great riding enthusiast, but there was nothing like being forced to repeatedly ride carriages to make one miss sitting the saddle instead of a bench.
+
+Even in Tratheke, a city boasting some of the finest streets she had ever seen, the exercise was unspeakably tedious. It did not help that the quality of the streets meant most people of means used a carriage to get around, leading to frequent glut on the main arteries. That and accidents, which was not nearly as interesting after the third time you watched valets brawl as they angrily accused each other of being responsible for the crash.
+
+Even knowing that the plenty of carriages paired with appropriate precautions was the reason no one had been able to figure out where Lady Angharad Tredegar lived while in the capital, she was in a dark mood as the carriage that’d picked her up finally rode into the Black House courtyard. An hour and half spent to learn almost nothing had her stewing in private frustration. Given that she was meeting Lord Gule this afternoon, she could have used this time for preparations.
+
+Angharad limped out of the carriage onto the stone floor, leaning on her cane, only for her eye to be drawn to a silhouette by the door: Uncle Osian stood there waiting for her, unsmiling. That his face heralded ill news to match those she had found in the Collegium was not a fine start to the day. Osian must have noticed her mood just as she had his, for as she made her way to him his frown deepened.
+
+“Did something happen out in the city?” he asked.
+
+She fell in with him as they entered the manse, his long stride never quite going faster than her hobble. He had developed a knack for matching his steps to hers without seeming it, Angharad fondly thought.
+
+“Officer Hage and his cat are missing,” she told him. “The Chimerical has been shuttered and the locals do not know when it will open again. Given Tristan’s continued absence and lack of reports, this is somewhat concerning.”
+
+If Tristan Abrascal were merely facing city guards and criminals she would not have thought twice about his continued absence, but some of the plots afoot the capital might just be more dangerous than he knew how to handle. The Mask had an impressive bag of tricks, but when it ran out he was a less than impressive fighter.
+
+“Ah, the Sacromontan,” her uncle muttered. “Often underfoot, that one.”
+
+He did not quite keep his disapproval out of his voice.
+
+“You mislike him?” Angharad asked, surprised.
+
+“You do not?” her uncle asked, sounding equally so.
+
+Angharad paused, seriously considering the question.
+
+“I do not always like his actions,” she conceded, “but he is honest in his reasons and intentions. I cannot say I dislike him, not truly, especially when being underhanded is his duty as a Mask. He is, well…”
+
+She coughed and ended the sentence there, faintly embarrassed she had been about to say ‘like an agreeable rogue in a story’. The world was not a thing of stories, as Vesper seemed keen on reminding her these days. Else she would have already dueled Song for honor and moved on instead of feeling her stomach clench in a knot of feelings too tight to pick apart every time they sat at the same table.
+
+“I won’t tell you to change your opinion of him,” Osian said, “but be wary of his patron. Krypteia are dangerous at the best of times, and that one more dangerous than most.”
+
+“He seems to consider her a grandmother of sorts,” Angharad told him. “As much as he does a mentor, anyhow.”
+
+“His ‘grandmother’ might well have been alive during the Second Empire,” Osian grunted back. “By rumor, she is also a habitual cannibal.”
+
+Angharad winced.
+
+“Rumor alone, surely,” she tried.
+
+Osian did not answer, which to those of the Isles was an answer. He was not so certain as to state it outright but found it believable enough to mention the rumor. Perhaps it was a contract price, Angharad thought. The murder of men as a contract price was forbidden under the Iscariot Accords, but to consume human flesh after death might… not be? She was not conversant with the details there. Devils certainly wore corpses as shells without sanction, so it seemed plausible.
+
+Horrifying to consider, mind you.
+
+Her uncle cast a look around them, finding them alone in the hall, and lowered his voice. Angharad expected further gossip about the apparently infamous Abuela but was instead to be informed as to why she had found him unsmiling.
+
+“I have the tools,” he said. “Do you have the map?”
+
+“It was obtained for me,” Angharad replied.
+
+Instead of borrowing it Maryam had memorized the lay and drawn it for Angharad on paper, relying on Gloam sorcery for precision. The signifier had used a similar trick on the Dominion, allegedly, so it was trustworthy – and discreet, which was almost as important. Maryam had not even asked why, to her surprise. She’d had reasons readied, precise wording to weave a net with, but the blue-eyed woman had simply shrugged and agreed.
+
+It had been something of a shock to realize that Maryam Khaimov now considered them amiable enough acquaintances to do her a small favor without question. That and humbling, for from the way that Song had disappeared into a room with the Izvorica for a few hours after the… argument, Maryam was near certain to be aware of Angharad’s entanglements with the Lefthand House. She would have been well within her rights to interrogate Angharad’s intentions and she simply had not.
+
+Uncle Osian nodded at her words, face grave, and she was wrenched away from her dim sense of guilt.
+
+“Moving the object after it is taken will be the trouble,” he said. “We cannot use Watch resources for it, and there have been… inquiring eyes around the delegation of late.”
+
+Angharad swallowed. Well worth a frown, that.
+
+“Are you suspected?” she asked in a whisper.
+
+“I believe my personal papers were looked through,” Osian grimly said. “There is nothing reprehensible in them, but that my affairs are being looked at in the first place is troubling.”
+
+He paused.
+
+“By the wary looks of some of my colleagues, I might not be the only one whose papers were inspected.”
+
+It occurred to Angharad then that this might not be about the infernal forge at all but about the traitor watchman Tristan had righteously slain. Was the investigation turning its eyes on their fellows in the black for a culprit after having found nothing in the city? It does not matter, Angharad reminded herself. Even if it were so, Tristan’s bloodied hands were not her secret to share and thus her suspicion could not be discussed with her uncle.
+
+“I still have a fourth of the funds you sent me on Tolomontera,” Angharad said. “If coin is the concern…”
+
+“Coin is coin,” he dismissed. “I can still spend significant sums before having to turn to a Watch vault and its attendant paper trail. But neither of us will be able to ride a cart to the Lordsport without drawing attention and the cart will be inspected by lictors on its way south. I’ve secured room on a ship at port, but getting the artefact there…”
+
+“Tristan spent time as a traveling man for one of the city’s trading houses,” she murmured. “He might be able to make introductions.”
+
+“We cannot risk Krypteia involvement,” Osian flatly said. “No matter how innocuous their contribution might seem. They are veritable bloodhounds for this sort of thing.”
+
+She considered bringing up the criminal gang calling themselves the Brazen Chariot, as they claimed to be smugglers of some skill, but Angharad was reluctant to involve them when they had ties to the Thirteenth that had been written down in official reports. It might put the others in the line of fire come the time of reckoning. That and they were criminals, thus just as likely to steal the infernal forge as to keep their word.
+
+Unfortunately that left only a single name.
+
+“I will have to speak with Imani,” Angharad said. “She ought to be capable of arranging for that part, at least.”
+
+“She is the ufudu you’ve chosen to bargain with, then,” Osian murmured.
+
+They had discussed approaching Jabulani over the matter instead and simply killing Imani Langa whenever convenient, but Lord Gule’s ‘attendant’ now struck her as too risky gamble.
+
+“Jabulani is too tied up in the coup,” Angharad quietly replied. “When it is put down he could be caught by the Watch or the Lord Rector.”
+
+“And thus it could all be squeezed out of him,” her uncle agreed. “The Lefthand House is not prone to telling tales even when their fingernails are pulled, but the Watch has methods that even spirits fear.”
+
+“I will meet with her today,” Angharad decided. “There is no time to waste, the Thirteenth might be leaving Asphodel soon.”
+
+Very soon, if Angharad’s success with the infernal forge proved enough for Lord Gule to judge her worth bringing into the cult. His written note when arranging the meeting this afternoon had been too bare bones to judge his mood, but she had hopes. If Angharad met other cultists and they went unmasked, they could be grabbed that very evening and interrogated.
+
+If their identities were veiled it would take somewhat longer, but arrangements had been made to cover the eventuality. Song and Captain Wen would be keeping a watch on the ambassador’s residence to try and narrow down the list of possible cultists, drawing on who was coming in and out.
+
+“Then I will finish the preparations on my end,” Osian replied, then paused. “I will require the map.”
+
+“I will trace you a copy tonight,” Angharad promised.
+
+They parted ways by the main flight of stairs, Osian taking long strides up it while Angharad turned a look of distaste on the carpeted heights. Best to take the east wing stairs instead, she decided. It would be a detour, considering the liar was likely in the Black House library, but the slope was significantly less ambitious despite the stairway being narrower.
+
+While the library being open to any watchman in principle, in practice the Eleventh Brigade had been living in it since their return from the countryside. Only officers of the delegation had the bite to send them out, Angharad having heard Song complain to Maryam that on the occasions the Tianxi had gone inside to borrow a book she had been glared at like an intruder the entire time.
+
+Naturally this meant Tupoc tried to visit at least thrice a day, which explained why the doors were closed and locked when Angharad finally reached them. The Fourth had finished its contract on Asphodel and been paid by the throne, but instead of chartering a merchant ship to a port where a Watch vessel might ferry them back to Tolomontera they had chosen to wait two weeks for the next Watch ship headed straight to Port Allazei.
+
+Tupoc had been spending that time making a nuisance of himself to everyone, but with his cabal so visibly shaken by the loss of ‘Expandable Losses’ she could not begrudge them lingering. Grief deserved time. What she did begrudge the Fourth was how when she knocked twice on the locked doors there was no answer, even when she raised her voice. It did attract the attention of a servant carrying a mop, however, and Angharad hailed him.
+
+“I need to have a message passed to Captain Imani Langa,” she told the young man.
+
+The liveried servant coughed, looked either way as if to find anyone else she might be talking to, then blushed.
+
+“Um,” he said. “Yes?”
+
+“I require that she attend me on the roof garden at her earliest convenience,” Angharad said. “Very earliest convenience.”
+
+“I’ll, um, tell her,” he said. “Master Voros has the keys. I just need to mop up the…”
+
+“Take care of this first, or pass it on to someone who can,” she said, kindly but firmly. “Tell Master Voros it is brigade business of some urgency.”
+
+The young servant swallowed and saluted, which set the mop to swinging, and he retreated most precipitously. Angharad spent a moment staring at his back in amusement, wondering whether she should remind him that Black House servants were not members of the Watch and thus there was no need to salute officers, but ultimately decided against it.
+
+Well, she sighed, timed for another few sets of stairs. She was already regretting having chosen the roof again.
+
+—
+
+It took Imani Langa the better part of an hour to show up, by which time Angharad was thoroughly irritated.
+
+She had already oiled her saber yesterday so it would have been of no benefit to the blade to do so again and she had no intention of risking the ufudu seeing the sewer map so she could not spend the time drawing her uncle a copy either. That left the mirror-dancer to stare at the view of the city for a quarter-hour until she got bored of it, then to pick petals off flowers for the rest while sitting on the bench to rest her leg. Ancestors, maybe she should have brought a book.
+
+Captain Imani wore an irritated look to match hers when she stormed up the stairs, not that Angharad particularly cared. She pushed herself up at the sight of the other woman, hand on her walking stick.
+
+“Do not send for me like that again,” Imani Langa flatly said. “Coming to meet you when summoned so boorishly forced me to-”
+
+Angharad turned and walked away, freed from the implied obligation of courtesy by Imani’s lack of polite greeting. She limped to the edge of the roof, leaning an elbow on the bronze railing overlooking the long drop down to the street. There were a few people passing below, too far for her to be able to make out their faces. Imani stomped up to her angrily.
+
+“- ildish of you, Tredegar,” the liar said. “Continue to behave in such a way and-”
+
+“Are we being listened to?” Angharad interrupted.
+
+Imani’s eyes narrowed.
+
+“No,” she said.
+
+There was no delay or hesitation. Her contract was always in use, as far as the Pereduri could tell.
+
+“I have found an infernal forge,” Angharad said. “Measures are being taken to secure it.”
+
+The ufudu stilled. Her face was unreadable, but her eyes searched the noblewoman for any hint of deceit.
+
+“Where is it?” Imani finally asked.
+
+Angharad snorted.
+
+“I will not be telling you that, you honorless cur,” she amiably said. “I require of you that you secure means of safe transportation to the Lordsport. You will be given a time and place to pick up the artefact and told where in port to deliver it.”
+
+“I can arrange transportation to Malan myself,” Imani replied without batting an eye.
+
+“I would not trust you to carry an iron vase,” Angharad scorned, “much less the only thing you need of me. The Lefthand House will have the artefact when I have proof they will deliver on their end of the bargain.”
+
+“You overestimate the strength of your bargaining position,” Imani warned.
+
+“Do I?” she asked, honestly curious as she met the liar’s stare.
+
+A long moment passed, then Imani Langa sighed and leaned her elbows against the railing.
+
+“I will make arrangements,” she said. “I need at least six hours of forewarning for the pickup, but it should be possible from tomorrow onwards.”
+
+“Good,” Angharad smiled. “Then our personal business is concluded.”
+
+She paused and took in the angle, the way the liar’s limbs were arrayed. How Imani was putting her weight on her arms, head just past the railing, legs slightly angled. It would do.
+
+Without word or warning, Angharad slammed her walking stick across the back of both Imani Langa’s knees.
+
+The spy let out a yelp and the lowers limbs folded, for one heartbeat entirely helpless. It was long enough for Angharad to grab her by the back of the collar and drag her past the edge of the railing until half her body was leaning forward into the drop and Angharad’s grip was the only thing keep her from a tumble into the void.
+
+“Tredegar,” Imani hissed, “what are you-”
+
+Ignoring the kicking legs, Angharad snatched the liar’s pistol out of her holster and tossed it into the garden. When her gaze returned to Imani it was to find the other woman had a knife in hand, but when she clicked her tongue the ufudu hesitated.
+
+“I wouldn’t do that,” Angharad said. “If you struggle too much I would be at risk of falling at well, which would make dropping you to preserve myself tolerably within the bounds of honor.”
+
+“It would be murder,” Imani hissed. “Killing a guest under the same roof.”
+
+“Oh, not at all,” Angharad mildly replied. “It would be ‘allowing you to die’, which most scholars agree falls under the more general category of circumstantial bloodshed.”
+
+Whatever it was Imani saw on her face, it had her cease kicking her legs. Wise.
+
+“This is pointless,” the liar said. “We both know you still need me.”
+
+The noblewoman dropped her by half an inch, Imani swallowing a scream.
+
+“I have found another ufudu on the island,” Angharad said. “They could provide the same service.”
+
+Which was true, though the additional risks made Imani the better option. Not that Angharad intended to tell her that.
+
+“What do you want, Tredegar?” Imani panted, looking queasy.
+
+“The Ivory Library,” she said. “Tell me everything you know about them.”
+
+The spy laughed in scared disbelief.
+
+“Really, that’s what this is about? Abrascal’s little problem?”
+
+To remind her of her situation, Angharad dipped her down slightly.
+
+“My legs are starting to ache,” she informed Imani. “It would be wise of you to wrap up this conversation before the pain grows intolerable or my fingers begin to sweat.”
+
+Imani paled.
+
+“They’re some kind of scholarly society,” the liar said. “Trying to figure out the nature of divinity by studying contracts that seem to break known rules.”
+
+“Then why the interest in Tristan?” Angharad frowned.
+
+Song had mentioned his patron spirit was a frequent visitor, but surely that was not so unusual? Lesser spirits supposedly found such visitation easier than great ones, in some ways, given they were… lighter in a metaphysical way, for lack of better word.
+
+“I don’t know,” Imani hissed. “But he’s hiding something, part of the report about him from the Dominion evaluators was sealed by the Krypteia.”
+
+“Then how would its contents be known to anyone else?” Angharad frowned.
+
+“He’s a Scholomance student now, the Obscure Committee gets everything on the students no matter what the covenants want,” Imani replied through gritted teeth.
+
+Her face was flushed from the blood pooling there, Angharad noted. Her eyes were beginning to tear up as well.
+
+“What else?” she pressed.
+
+“You know the rest,” Imani hissed. “They put a bounty on his head but they can’t get involved in Tolomontera.”
+
+Angharad hummed. Perhaps that truly was all she knew. Another matter, then.
+
+“Tozi Poloko,” she said.
+
+“The daughter of a Sunflower Lord,” Imani grunted. “From a consort, not a formal wife, but she was killing her way up the line of succession so they forced her into the Watch.”
+
+Oh? That might explain why Tozi considered herself beholden to her family still. Did she hope to go back to Izcalli one day to take the title, or was it simply that escaping the kingdom had come at a price and renouncing the bargain would get her killed? It would not excuse her actions either way, but the noblewoman would admit to some curiosity.
+
+“Izel Coyac,” Angharad ordered.
+
+“All the Coyac sons serve in the army, but Izel broke a pact with a warrior society to flee abroad and enroll in the Watch,” Imani panted. “He was going to be given back, but instead Doghead Coyac made some kind of deal and he was suddenly recommended for Scholomance.”
+
+Both endangered lives snatched away from the gallows at the last moment, Angharad thought. She could hazard a guess as to what sinister society had offered them salvation, and what price was now being asked of them for it. She felt a pang of sympathy, considering her own circumstances, but only a pang. Her next questions were anticipated.
+
+“Kiran Agrawal did too well in courting tournaments, his parents stopped looking for a match and just sent him for the consolation money,” Imani blurted. “Barboza’s family were nobles in a sitiada but it fell to a plague god and they became destitute exiles. That’s all I know about the Eleventh, Tredegar, so let me up.”
+
+Angharad hummed. Her legs were beginning to throb, and her arm to shake. Imani was not heavy but neither was she light.
+
+She released her grip, just long enough for a scream of terror to bloom, then grabbed the ufudu with both hands and wrested her back behind the railing. She let Imani drop in a painful sprawl, taking back her walking stick and rolling her shoulder. Imani stayed on the ground for a long moment, eyes white and hands trembling.
+
+Was she imagining the strange glint in that gaze? Something like satisfaction, or perhaps vindication. She must be.
+
+“Contact me when you have obtained means of transportation,” Angharad ordered.
+
+The noblewoman limped past the spy, feeling the weight of a hateful glare resting on her back, and stopped at the head of the stairs.
+
+“And do remember to pick up your pistol,” Angharad called out. “Gunpowder is bad for the flowerbeds.”
+
+Feeling somewhat refreshed, she made her way down the stairs. A bit of a meal and then meeting the ambassador, she thought. Yet more intrigue to wash up the intrigue she had just drunk down.
+
+Her life really had too much cloak and too little dagger in it these days, Angharad mourned.
+
+—
+
+Dealing with Tupoc Xical was, Song had found, an uncomfortable balancing game.
+
+Give the man too much credence and attention and he would, without batting an eye, use them to draw you into pointless timewasting for his own entertainment. Given him too little, though, and he would make certain that you had missed something of importance by ignoring his caterwauling. Song had devised a working method to mitigate the risks, but it was admittedly somewhat inelegant.
+
+“I have not yet struck you in the head, so there is no explanation for your wandering tongue,” she informed the Izcalli. “Have you considered killing yourself and allowing your brigade to be led by a halfway competent officer instead?”
+
+Tupoc’s eerily symmetrical face fell into a pout that, if displayed on a statue, Song would have called artless. Too even and therefore not quite passing as human.
+
+“And to think I had come bearing gifts,” he said. “Song, you wound me.”
+
+“I wish,” Song replied, “but there are simply too many witnesses in Black House.”
+
+Captain Imani coughed into her fist, not quite hiding her smirk.
+
+“As we were discussing before this distraction,” the Malani said, “I am amenable to Captain Song’s suggestion that we share our reports and pool information to finish our contracts as swiftly as possible.”
+
+One, two. Answer Xical’s dancing around with an open and blunt verbal attack that he either had to answer or play off, then let the third person at the table drag the conversation back on track as a form of de-escalation. Tupoc didn’t truly want to brawl at the negotiating table, not when he had nothing to gain from it, so he would let the redirection happen.
+
+Song just had to wildly escalate every time he tried to be a nuisance, which while rather uncouth was oddly satisfying. That he seemed somewhat at a loss at how to deal with not being the most unreasonable person at the table only added to the attraction. Of course, it would beneath Song to be so taken with what was nothing but a measured negotiation tactic.
+
+Song Ren smiled in small, petty satisfaction at the pale-eyed Izcalli.
+
+“My brigade has already finished their contract,” Tupoc said. “What is there to gain for us? Besides, we already had a little talk along these lines a few days back. What worth is trading reports?”
+
+“We shared only broad lines,” Captain Imani pointed out. “We do not even know whose lands you fought the dragon in, while Captain Song has remained painfully vague on the nature of the cult and conspiracy her brigade unearthed.”
+
+Song ignored the reproachful look from Imani at the latter part of the sentence. She had no obligation to entertain another captain’s requests and receive nothing in return. As for the earlier part, about the location of the Ladonite dragon’s death, Song had her suspicions. Xical had mentioned journeying through wheat fields for days, and there were only so many noble holdings in Asphodel where such a thing was possible outside of Tratheke Valley.
+
+Tupoc smiled thinly at the Malani, as unmoved by the implied reproaches as Song was.
+
+“Yes, it’s a shame that even in her grief Alejandra can tell when she’s being hit up for information, isn’t it?” the Izcalli said. “Between that and your secret meeting with Tredegar up on the roof, you might have avoided these talks entirely.”
+
+Song hastily smothered any hint of surprise at the mention of Angharad meeting Imani, then silently cursed when she saw Tupoc’s lips twitch. She had not been quite quick enough.
+
+“I would have preferred to simply obtain the information,” Captain Imani agreed without a hint of abashment, “but that does not appear to be feasible. I have come to the belief that all our contracts – and perhaps even the Nineteenth’s – are in some way connected. To share reports would allow us to put all the facts together.”
+
+“And I repeat myself,” Tupoc said. “Given that the Fourth has finished its own contract, what’s in this for us?”
+
+Best nip that in the bud, the Tianxi thought. He had found a thread and would not cease picking at it until the weave broke, she could see it in that little gleeful look he’d put on.
+
+“Social obligation to pretend your presence is not physically repellent until the exchanges are finished,” Song told him. “I might even feel compelled to feign some degree of grief at your funeral after you inevitably get yourself killed.”
+
+Tupoc narrowed his eyes at her, but Imani should be well schooled enough to…
+
+“You are still on Asphodel for perhaps as long as two weeks,” Captain Imani told him. “Given the very real possibility the Watch will get caught up the coup Captain Song warned us about, learning the details of what is to come seems the kind of precaution a wise captain would take.”
+
+Tupoc leaned back into his seat, tipping his chair backwards. Song resisted the urge to nudge it back and watch him topple onto the floor, no matter how satisfying it would be to watch.
+
+“I’ll have to think about it,” the Izcalli mused. “Why, between your spying and Captain Song’s endless train of insults I am unsure as to the untrustworthiness of my fellow captains. Of course, should an apology be given…”
+
+Given how pale eyes then turned to Song it was clear who he wanted that apology from. If there had been a good chance he’d cooperate after receiving said apology, Song liked to think she would have forced herself to give it. As the chances were slim to none, she was spared that dilemma.
+
+“I am sorry,” she replied instead, “that I did not take the time to kill you on the Dominion and spare myself your continued presence on Vesper.”
+
+A beat passed, then he snorted.
+
+“That almost offended me,” he praised, smirking as he rose to his feet. “Not what I asked for, though. I will have to keep pondering whether the bargain’s worth it for my brigade.”
+
+He stretched out his arms, cracking his shoulders to Song’s twitch of distaste and Imani’s appreciative look at the muscles on display.
+
+“But a parting gift for you lovely ladies, as I did say I came bearing them,” Tupoc said. “I got curious about what the Nineteenth Brigade is up to, you see.”
+
+Song cocked an eyebrow. She was as well, but trying to track down Hector Anaidon – and failing, the man had apparently disappeared – had taken up too much time for her to make a serious effort.
+
+“And?”
+
+“Tozi should have shaved her head fully,” he said, “if she wanted to visit half the shrines in the city without anyone noticing it.”
+
+“Shrines,” Imani said, honing on the same detail Song was. “Not temples?”
+
+“Only small gods,” Tupoc agreed. “I wonder how that ties into them avoiding Black House like the plague?”
+
+Song was left to wonder whether the Nineteenth was pursuing shrines because the temples to the greater gods of Asphodel would be more closely watched, or because it was the lesser gods that were genuinely of interest. Hopefully when Tristan returned he would be able to shed some light on the matter since he was all but sure to have followed them.
+
+The two women remained seated in silence until Tupoc had finished strutting out of the room, leaving the door open behind him out of what Song assumed to be base pettiness.
+
+“His lunacy would be significantly less tragic if he were not so pretty,” Captain Imani opined.
+
+Song turned a look of open disgust on her. You might as well ascribe good looks to a gunpowder barrel with some insults painted on. The Malani was only amused, and as the silence stretched out Song sighed and looked away.
+
+“Why are you so intent in getting his reports?” Song asked. “Trade between our own brigades might be enough to unearth most of what we need.”
+
+“Because I have spent days and nights tearing through the theology of Asphodel and found frustratingly little matching the rituals out in the valley,” Captain Imani darkly replied. “There are gods associated with the number six and gods associated with burying the dead, but none that are both. And you cannot have missed the timeline, either.”
+
+Song sighed but nodded. The hidden temple that the Fourth had stumbled upon had been robbed of a sacred artefact around when the ‘Golden Ram’ cult began expanding aggressively – likely due to being taken over by another cult – but also before the killings investigated by the Nineteenth began. The latter facts, at least, could feasibly be linked. Someone was out there using a leashed entity to commit murders and the most sacred artefact of a dead god seemed a fine way to control its remnant.
+
+“You think the artefact taken from the temple has something to do with your rituals,” Song stated.
+
+“I even tried to match when we suspect rituals to have taken place to the deaths investigated by the Nineteenth, but there was no noticeable pattern,” Captain Imani said. “Not that my saying this means much when we have no idea how deaths went unnoticed. We know of at least three the lictors missed.”
+
+“I have some interest in the nature of that sacred tool as well,” Song admitted. “Though not half as much as in the details of the rituals you uncovered.”
+
+“If he does not bite by tomorrow, we can trade between ourselves,” Imani replied, refusing the implied offer. “I would rather have him in than out if that is possible.”
+
+Song raised an eyebrow.
+
+“And the Nineteenth?” she probed.
+
+“Captain Tozi is in the wind,” Imani shrugged. “We can discuss cutting her in should she return, but until then…”
+
+The Tianxi watched the other woman and moment, then nodded. It would have to do. There was a risk the Nineteenth might be able to figure out where Tristan was from the Thirteenth’s reports, broadly speaking, but Imani’s implication she would not bring in Tozi Poloko and her accomplices without first consulting Song seemed reliable enough.
+
+Lying over the matter would thoroughly burn any bridge between their brigades, and Tupoc’s little jibe earlier seemed to indicate Imani Langa still had an eye on a member of the Thirteenth.
+
+“Agreed,” Song said, rising to her feet. “A pleasant afternoon to you, Captain Imani.”
+
+“And you, Captain Song,” the dark-skinned woman smoothly replied.
+
+Song did not linger behind. Angharad would be leaving for Ambassador Gule’s mansion within the hour and when she did Song would be following at a distance to keep an eye on the comings and goings around said mansion – as would Captain Wen. With any luck, it would help them put together a list of potential cult members.
+
+Song had already prepared her affairs for that, but returning to her room would involve surrendering her last excuse to avoid being in the presence of the two remaining letters so instead she kept walking down the hall and rapped her knuckles against Maryam’s door. The Izvorica had spent all her time in her rooms since returning from the palace yesterday, save for meals and a single trip to the Black House library.
+
+A muffled shout bid her to enter and Song stepped into the room to find Maryam Khaimov bent over her writing desk, scribbling in the same journal she had used since her trip to the private archives. Her eyes were sunken from lack of sleep but she peered down at her journal with intense focus as the lamplight flickered. Her blue gaze rose but an instant, noticing Song and grunting at her to close the door.
+
+The Tianxi did, eyeing the two books sharing the writing desk with the journal as she crossed the room. One was open and set before Maryam, who glanced at the neat writing inside periodically, while the other was closed and to the side. She hardly needed to look twice to know these must have been from the Black House stacks. Even though there were no rare forbidden books there, it hardly meant there would be nothing of use for a signifier.
+
+The Akelarre Guild kept their precious secrets locked up tight, but while the Navigators were the only covenant to wield the Gloam they were hardly the only one to study it. The works Maryam could get her hands on here were no match for what she could borrow in a chapterhouse, but the scholarship of the Peiling Society would still be of use – and the signifier was using them.
+
+“Ontological Dialectics, volume three,” Song read on the spine of the closed book as she grabbed a chair from across to the room to sit facing Maryam. “Were the first two not stirring enough a read?”
+
+The pale-skinned woman snorted, setting aside her steel tip pen and blowing at the fresh ink on her journal page.
+
+“The first two books busy themselves with generalities,” Maryam replied. “Practical experiments are only found in the annex, which is the last section of the third volume.”
+
+“Experiments?” Song leadingly said.
+
+“On retention rates,” Maryam replied.
+
+She flipped the book she had open Song’s way, letting the Tianxi glimpse at pages. The contents were halfway between a mathematical equation and sheer gibberish, cleanly written lines with numbers and symbols intermixed with terms like ‘logotic saturation’ and ‘observational solipsism’. The measure in use was called an intero, a term she vaguely remembered being one of the few Second Empire base units that’d not continued to be used across the old imperial territories after the fall of Liergan.
+
+“What does an intero measure, if I might ask?” Song asked.
+
+“The intersection of a unit of Grasp and Command as wielded by an average practitioner,” Maryam recited. “Only the Second Empire was never able to figure out there is such a thing as inherent Gloam density – that some currents of Gloam are naturally heavier than others – so the unit is basically worthless for anything remotely precise.”
+
+“But it is still useful to measure a general direction,” Song tried, more or less following.
+
+Maryam nodded.
+
+“So a generality is what you are seeking to clarify, then.”
+
+The Izvorica passed a hand through her matted, almost oily hair. How long since she had washed it? Maybe since Tristan left, the captain though.
+
+“My question is whether it’s possible to cheat my way past logotic saturation principles by relying on solipsistic metaphysics,” Maryam said.
+
+Song silently raised an eyebrow.
+
+“Gloam suspends the rules of the Material wherever it is dominant,” Maryam said. “Observational solipsism is the theory that Gloam can do this because its fundamental property is that it is ‘unobserved’, only leaving its original state of being everything-and-nothing when beheld. Like a liquid that becomes a solid whenever looked at.”
+
+Song’s eyebrow rose even higher. Maryam sighed.
+
+“My logos is a waterskin that can only hold so much water,” she said. “But if I put out the lights before filling it, since no one can see what happens in the dark will the world forget what the limits of the waterskin are?”
+
+Song hummed.
+
+“Will it?” she asked, genuinely curious.
+
+“Signs point to yes,” Maryam said. “But also that a portion of that cheat water will evaporate when the lights are lit again. I have been trying to calculate how large that portion would be, but with the sources I have at hand it’s like… trying to multiply a cat by the future price of scissors.”
+
+Song paused.
+
+“Where are the scissors being sold?” she asked, putting on a serious face.
+
+“You think you’re so funny, don’t you?” Maryam complained.
+
+“Of course not,” Song lied, lips twitching.
+
+She then turned the book back Maryam’s way.
+
+“So what is the water in that earlier metaphor?” she asked. “What do you intend to fill your logotic waterskin with?”
+
+There was a beat of silence then Maryam’s face closed. She must be tired indeed, Song thought, to be so unsubtle.
+
+“In getting rid of the parasite afflicting me, I might be able to make a few gains,” Maryam casually said.
+
+Too casually. Song’s eyes narrowed.
+
+“That is quite a bit of preparation work for a ‘might’,” she noted, gesturing at the writing desk.
+
+“I should make the most of it when it comes,” Maryam dismissed. “Finite chances and all that.”
+
+“You’ve yet to answer my question,” Song said. “What does ‘water’ stand for here?”
+
+“The parasite absorbed memories of a few of my people’s rites,” she replied. “I would have them back.”
+
+Song looked at her for a long time, stomach clenching. It had begun so lightly, this talk, but now…
+
+“You are lying to me,” she said.
+
+Maryam scowled.
+
+“I am not-”
+
+“Saturation,” Song cut through. “I am no theist, but I understand what that word means. You are trying to drink enough memories that it would strain the capacity of your logos and you want to rely on ritual to get around that limit. That does not sound like a few rites to me, Maryam.”
+
+Or, for that matter, something that could be done without damaging your own mind. As Song had said she was no theist, but force-feeding your own logos like a goose did not strike her as the safest of decisions.
+
+“It is my inheritance,” Maryam defensively said. “Mine to do with as I will.”
+
+Rights are not my concern, Song thought. Last time you consumed part of the parasite, it nearly killed you and made your soul fragile as glass. But she could see it in the way Maryam’s chin was tucked, that the stubbornness had already set in. That she was tossing her worries at a mountainside.
+
+“How much knowledge is there really?” Song quietly asked.
+
+The Izvorica grit her teeth.
+
+“A lot,” she said. “Leave it at that.”
+
+Song worried her lip.
+
+“Keeper of Hooks,” she finally said, halfway guessing. “It is one of the titles the parasite claimed, when it intervened to save my life.  You never told me what it means.”
+
+“That is a private matter,” Maryam scowled.
+
+“A private matter that has ties to what you are planning up in the palace,” Song pressed.
+
+“Would that make it any less private?” Maryam retorted.
+
+“Yes,” Song said. “If you are using the Thirteenth’s contract with the throne to enact this… ritual you are planning, then it has implications for all of us.”
+
+Maryam slowly, measuredly, closed her journal.
+
+“You are returning to the palace tonight,” Song continued. “Much later than usual. How much is the investigation and how much this ritual?”
+
+When blue eyes met silver, Song almost shivered – it was as if she were looking into ice.
+
+“I kept quiet as Tredegar dabbled in treason,” Maryam evenly said. “I kept my mouth shut as you let yourself leveraged, let yourself be physically beaten by a pack of crazed revolutionaries. Even when Tristan murdered an officer of the Watch and began scheming to knock off an entire cabal, I stayed silent. Because personal matters are exactly that.”
+
+Song swallowed.
+
+“And now,” Maryam quietly said, “now that I try to settle an old debt – without it costing anyone else anything, without making a mess and murdering, now you act as if some line has been crossed?”
+
+She leaned forward.
+
+“Is that what you are saying, Song?” Maryam asked.
+
+Part of her already knew there was no good end to this conversation. That she’d already hit the reef and all that sailing forward would achieve was ramming it deeper into the hull. But she had to try.
+
+“I am saying,” Song replied, “that I am concerned at your decision. That you are visibly exhausted and that the last time you tried something like this it nearly killed you.”
+
+“It didn’t,” Maryam denied. “I did it again down there, in the shipyard, and suffered no worse than a migraine for it. I figured it out, Song. How I can use this place to help me.”
+
+“Saturation,” Song echoed again. “Tell me you aren’t being reckless, Maryam, and I will believe you. Swear to me to you are not putting yourself at risk and-”
+
+“There is no safe way to wield the fucking Gloam, Song,” the pale-skinned woman shouted. “Or to do what I need to do. Just like there’s no safe way to cozy up to the Yellow Earth and a king at the same time.”
+
+She let it sting, let it sink, let it pass. Hand on the chisel.
+
+“So you will be risking your life,” Song said. “Why? Why now? You could wait until we return to Tolomontera, where Captain Yue can help you.”
+
+“Because I won’t have another opportunity like this,” Maryam bit back. “You don’t get it, Song. It’s not just finally matching my Grasp and Command, although that’d be reason enough. I found a filter to put between me and the memories, one strong enough I could look for decades and not find a better one. I will not get a chance like this again.”
+
+“Why do you need a filter, Maryam?” Song pressed. “What is so urgent?”
+
+“Because it could be the difference between losing two thirds and losing half,” Maryam said. “Maybe even just a third, if I’m lucky. I could try this again in Tolomontera, maybe, but the results would be overwhelmingly worse. I will never be able to keep so much the Cauldron as I can here.”
+
+“The Cauldron?” Song pressed.
+
+“My people’s knowledge,” Maryam replied through gritted teeth. “Centuries of it.”
+
+Song paused.
+
+“And you would risk destroying half of it?” she asked, honestly taken aback.
+
+“As opposed to the nothing I currently hold?” Maryam mocked. “Even if I got only a hundredth it would still be worth it. And it won’t come to that, anyway. The shade has a soul, it’s stable and I can make it even more stable. That will stem some of the bleeding.”
+
+“So it does have a soul,” Song said.
+
+As she had glimpsed that day, when it saved her life. Maryam curtly nodded.
+
+“Thank you for informing me,” she visibly forced herself to say. “That knowledge made my ritual much more feasible.”
+
+“It sounds,” Song slowly said, “as if you are planning to ritually murder a soul for knowledge.”
+
+“I am killing a thief to take my stolen inheritance back,” Maryam coldly said. “What of it?”
+
+“This does not sound like you,” Song tried. “You are no pacifist, but ritual murder?”
+
+“Then you don’t know me at all,” Maryam Khaimov bit out.
+
+Recognizing the dead end, Song bit her tongue.
+
+“How dangerous will it be?” she asked instead.
+
+“As much as it needs to be,” Maryam flatly replied.
+
+“Reckless, then,” Song said, but there was not even a flicker of doubt in those blue eyes.
+
+Maryam wasn’t hearing her. Maybe…
+
+“Perhaps you can wait until Tristan re-”
+
+“Tristan Abrascal,” Maryam hissed, “is not my father.”
+
+Song flinched. That had been a mistake.
+
+“Do you know how I can tell?” Maryam harshly said. “Because I watched my father wither to death in his sickbed, Song, then watched again as the Malani swept over my home like a tide of locusts – claiming they’d inheritedVolcesta from him.”
+
+The signifier’s fists clenched, oily darkness billowing around them.
+
+“Thieves,” she said. “Just like the parasite who stole Mother’s gift and sent her spiraling into the worst of her madness. And I am done letting thieves live large off the bones of my family, Song. I am fucking done.”
+
+Song pushed her chair, some primal instinct in the back of her head fearing the sight of the darkness dripping from Maryam’s grip and staining the table.
+
+“Tonight I trap it,” she said. “The day after that I’ll kill it, and at last some of my ghosts will be laid to rest.”
+
+“Are you really willing to kill yourself over this?” Song bit back.
+
+“No,” Maryam Khaimov harshly smiled, “but I am entirely willing to murder. Now get out, Song – I am done humoring the moral authority of someone who can’t be bothered to decide what side they’re on.”
+
+She swallowed. That… it would have been nothing, coming from someone else, but from Maryam? It cut deeper than she would have thought.
+
+“Close the door behind you,” Maryam said, and flipped her journal back open.
+
+She dipped her pen into the inkwell and Song swallowed again. The dismissal stung almost as much as the words. She ambled to the door, feeling lost, but what could she do save leave? Her feet took her to her room and she sat on the chair at her own writing desk. Staring down at the two letters remaining. Fingers trembling, she unfolded the first.
+
+A date, a place, a time. The Yellow Earth demanded her presence tomorrow.
+
+She set down the summons, breathed in, and cracked open the seal on the other. It was not long, and the hand that had written it was not yet practiced. More specifically it was not practiced in using Cathayan characters, careful but still rough calligraphy strokes addressing Song in her own native tongue.
+
+We both have our duties, I knew that from the start. It stings, but not as much as you disappearing from my days. Meet me again just the two of us. And beneath that was a line from one of her favorite poems by Lady Zong’s, ‘Farewell of Lovers’. To part in joy, summer’s sorrow. He’d left the following line unwritten. To part strangers, on wintry roads.
+
+Evander would rather mourn her departure in joy than remember as a distant stranger.
+
+Song shakily breathed out, fingers twitching to crumple the message but immediately she regretted the impulse and almost obsessively smoothed it out. She put the paper down before she could make more of a fool of herself. Maryam had been right about one thing, at least.
+
+This would be easier if Song still knew what side she was on.', now());
