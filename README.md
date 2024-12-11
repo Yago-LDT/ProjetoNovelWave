@@ -2,7 +2,7 @@
 Esse é um projeto que desenvolvi para a faculdade, na disciplina de Linguagem Técnica de Programação Web (LTPW).
 <br>
 
-## Do que se trata? O que esse programa faz?
+### Do que se trata? O que esse programa faz?
 
 Se trata de um site para leitura de webnovels. Webnovels são obras de ficção criadas e publicadas por qualquer pessoa na internet, muitas vezes de graça. 
 Nesse site, o usuário pode explorar um catálogo dessas histórias, acessar suas páginas e ler essas obras. Também pode criar uma conta e favoritar as novels que gostar.
@@ -12,7 +12,7 @@ Dessa forma o site tem as funcionalidades:
 * Listar capítulos e ler o conteúdo de um capítulo.
 * Criar, deletar, visualizar ou alterar os dados da sua conta.
 
-## Quais são as linguagens/ferramentas utilizadas nesse projeto?
+### Quais são as linguagens/ferramentas utilizadas nesse projeto?
 As linguagens utilizadas são:
 
 * JSP (Java Server Pages)
@@ -21,7 +21,7 @@ As linguagens utilizadas são:
 * CSS
 * GlassFish Server
 
-## Como rodar esse projeto na minha máquina?
+### Como rodar esse projeto na minha máquina?
 
 * Tenha o Xampp
 * Tenha o GlassFish Server
