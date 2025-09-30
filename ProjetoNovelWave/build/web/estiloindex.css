@@ -6,38 +6,39 @@ body, h1, table, td, input, a {
 }
 
 logo {
-     display: flex; 
-    width: 180px; 
+    display: flex; 
+    width: 80px; 
     height: 80px; 
-    background-image: url('https://i.imgur.com/pye9h58.jpeg'); 
     background-size: contain; 
     background-repeat: no-repeat; 
     background-position: center; 
     border-radius: 15px;
 }
 
-/* Geral */
+
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(180deg, #000000, #333333);
+    background: linear-gradient(180deg, #000000, #1B0032);
     color: #ffffff;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     height: 100%;
-    padding: 20px;
+    padding: 10px;
 }
 
-/* Cabeçalho */
+
 header {
+    border-radius: 25px;
     width: 100%;
-    background-color: #222;
+    background-color: #000;
     padding: 10px 0;
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     z-index: 10;
+    margin: 0px;
 }
 
 .navbar {
@@ -73,16 +74,18 @@ header {
     color: #4E65E9;
 }
 
-/* Título */
+
 h1 {
-    margin-top: 120px; /* Aumenta o espaço entre o cabeçalho fixo e o conteúdo */
-    color: #4E65E9;
+    margin-top: 120px; 
+    color: #7C57F2;
     font-size: 2rem;
     text-align: center;
     margin-bottom: 20px;
 }
 
-/* Tabela de Dados */
+
+
+
 table {
     width: 100%;
     margin: 20px auto;
@@ -109,7 +112,7 @@ td a:hover {
     text-decoration: underline;
 }
 
-/* Formulário de Edição */
+
 form.dados {
     background: #1a1a1a;
     padding: 20px;
@@ -154,7 +157,7 @@ input[type="password"]:focus {
 
 form input[type="submit"] {
     padding: 10px 20px;
-    background: linear-gradient(90deg, #7C57F2, #261847);
+    background: #4B006E;
     color: #ffffff;
     border: none;
     border-radius: 5px;
@@ -166,7 +169,7 @@ form input[type="submit"] {
 
 
 form input[type="submit"]:hover {
-    background: linear-gradient(90deg,  #7C57F2, #261847);
+    background: #7C57F2;
     transform: scale(1.05);
 }
 
@@ -188,7 +191,7 @@ form button[type="submit"]:hover {
     transform: scale(1.05);
 }
 
-/* Card de Favoritos */
+
 .conteudo-card {
     background: #333;
     padding: 20px;
@@ -202,8 +205,8 @@ form button[type="submit"]:hover {
 }
 
 .conteudo-card img {
-    width: 100%;
-    height: auto;
+    width: 200px;
+    height: 230px;
     border-radius: 5px;
 }
 
@@ -228,7 +231,7 @@ form button[type="submit"]:hover {
     text-decoration: underline;
 }
 
-/* Rodapé */
+
 footer {
     width: 100%;
     text-align: center;

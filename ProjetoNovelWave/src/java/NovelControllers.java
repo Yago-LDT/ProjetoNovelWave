@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 
 public class NovelControllers extends HttpServlet{
     
-    //private static final log serialVersionUID = 1L;
+    
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

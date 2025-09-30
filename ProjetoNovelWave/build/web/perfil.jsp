@@ -9,34 +9,35 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Perfil</title>
-        <link rel="stylesheet" href="estiloperfil.css">
+        <link rel="stylesheet" href="estiloindex.css">
     </head>
     <body>
         <header>
         <div class="navbar">
             <div class="logo">
-         <a href="index.jsp">NovelWave</a>
-        </div>
+                <a href="index.jsp"><img src="imagens/novelwavelogo.png" width="100" height="100" alt="Logo Novel Wave"/> </a>
+            </div>
             <ul class="nav-links">
-                <li><a href="index.jsp">Home</a></li>
+                <li><a href="index.jsp"><img src="imagens/homelogo.png" width="50" height="50" alt="Home" title="Home"/></a></li>
+                <li><a href="#"><img src="imagens/categoriaslogo.png" width="50" height="50" alt="Categorias" title="Categorias"/></a></li>
                 <%
-                   String loginLogado = (String) session.getAttribute("login");
-                   
-                    if (loginLogado == null) {
+                    String loginLogado = (String) session.getAttribute("login");
+                    if (loginLogado != null) {
                 %>
-                    <li><a href="cadastrar.jsp">Cadastrar</a></li>
-                    <li><a href="login.jsp">Login</a></li>    
+                <li><a href="perfil.jsp"><img src="imagens/perfillogo.png" width="50" height="50" alt="Perfil" title="Perfil"/></a></li>
+                <li><a href="logout.jsp"><img src="imagens/logosaida.png" width="50" height="50" alt="Logout" title="Logout"/></a></li>
                 <%
                     } else {
                 %>
-                    <li><a href="perfil.jsp">Perfil</a></li>
-                    <li><a href="logout.jsp">Sair</a></li>
+                    <li><a href="cadastrar.jsp"><img src="imagens/cadastrologo.png" width="50" height="50" alt="Cadastrar" title="Cadastro"/></a></li>
+                    <li><a href="login.jsp"><img src="imagens/loginlogo.png" width="50" height="50" alt="Login" title="Login"/></a></li>
                 <%
                     }
                 %>
             </ul>
         </div>
     </header>
+            
         <% 
           String login_logado = (String) session.getAttribute("login");
     if (login_logado == null) {
@@ -45,7 +46,7 @@
     }
             %>
         
-            Seja bem vindo: <%=login_logado %> 
+              
             
         <h1>Dados do seu perfil</h1>
         
@@ -204,7 +205,11 @@
             
         
         <%
-            }
+            } if(!rs4.next()){
+%>
+            <h2>Nenhuma novel favoritada encontrada</h2>
+            <%
+}
             
             rs4.close();
             stmt4.close();
